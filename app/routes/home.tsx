@@ -1,11 +1,9 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
+import { Home as Welcome } from "../components/Home";
 
+// This function sets the page's metadata - like the browser tab title and page description
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
+  return [{ title: "Home" }, { name: "description", content: "Welcome to the home page" }];
 }
 
 export default function Home() {
