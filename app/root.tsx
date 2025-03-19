@@ -6,9 +6,14 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
+import * as Sentry from "@sentry/react";
 import type { Route } from "./+types/root";
 import "./app.css";
+
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  environment: import.meta.env.DEV ? "development" : "production",
+});
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -54,9 +59,13 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     message = error.status === 404 ? "404" : "Error";
     details =
       error.status === 404 ? "The requested page could not be found." : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
+  } else if (error && error instanceof Error) {
+    // Will only capture the non 404 error
+    Sentry.captureException(error);
+    if (import.meta.env.DEV) {
+      details = error.message;
+      stack = error.stack;
+    }
   }
 
   return (
